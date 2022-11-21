@@ -8,8 +8,9 @@
 #include "ARKitDefines.h"
 
 // These don't all need to be static data, but no other better place for them at the moment.
-static id <MTLTexture> s_CapturedImageTextureY = NULL;
-static id <MTLTexture> s_CapturedImageTextureCbCr = NULL;
+static id <MTLTexture> s_CapturedImageTextureY[2];
+static id <MTLTexture> s_CapturedImageTextureCbCr[2];
+static int s_FrameIndex = 0;
 static UnityARMatrix4x4 s_CameraProjectionMatrix;
 
 static float s_AmbientIntensity;
@@ -422,7 +423,7 @@ inline void UnityLightDataFromARFrame(UnityLightData& lightData, ARFrame *arFram
 -(void)sendAnchorRemovedEvent:(ARAnchor*)anchor
 {
     UnityARImageAnchorData data;
-    if (@available(iOS 11.3, *)) {
+                                                                                                                                                                                                                         if (@available(iOS 11.3, *)) {
         UnityARImageAnchorDataFromARImageAnchorPtr(data, (ARImageAnchor*)anchor);
     }
     _anchorRemovedCallback(data);
@@ -648,8 +649,10 @@ static CGAffineTransform s_CurAffineTransform;
     if (textureY != nil && textureCbCr != nil) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // always assign the textures atomic
-            s_CapturedImageTextureY = textureY;
-            s_CapturedImageTextureCbCr = textureCbCr;
+            s_FrameIndex = 1-s_FrameIndex;
+            s_CapturedImageTextureY[s_FrameIndex] = textureY;
+            s_CapturedImageTextureCbCr[s_FrameIndex] = textureCbCr;
+            
         });
     }
 }
@@ -752,6 +755,18 @@ extern "C" void* unity_CreateNativeARSession()
     unityCameraNearZ = .01;
     unityCameraFarZ = 30;
     s_UnityPixelBuffers.bEnable = false;
+    return (__bridge_retained void*)nativeSession;
+}
+
+extern "C" void* unity_CreateNativeARSessionWithPtr(void* arkitSession)
+{
+    UnityARSession *nativeSession = [[UnityARSession alloc] init];
+    nativeSession->_session = (__bridge ARSession*)arkitSession;
+    nativeSession->_session.delegate = nativeSession;
+    unityCameraNearZ = .01;
+    unityCameraFarZ = 30;
+    s_UnityPixelBuffers.bEnable = false;
+    [nativeSession setupMetal];
     return (__bridge_retained void*)nativeSession;
 }
 
@@ -1076,8 +1091,8 @@ extern "C" UnityARHitTestResult GetLastHitTestResult(int index)
 extern "C" UnityARTextureHandles GetVideoTextureHandles()
 {
     UnityARTextureHandles handles;
-    handles.textureY = (__bridge_retained void*)s_CapturedImageTextureY;
-    handles.textureCbCr = (__bridge_retained void*)s_CapturedImageTextureCbCr;
+    handles.textureY = (__bridge_retained void*)s_CapturedImageTextureY[s_FrameIndex];
+    handles.textureCbCr = (__bridge_retained void*)s_CapturedImageTextureCbCr[s_FrameIndex];
 
     return handles;
 }

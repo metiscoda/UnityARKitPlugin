@@ -9,7 +9,7 @@ This is a native [Unity](https://unity3d.com/) plugin that exposes the functiona
 update, face tracking (requires iPhone X), image anchors, point cloud extraction, light estimation, and hit testing API to Unity developers for their AR projects. This plugin is a _preview quality_ build that
 will help you get up and running quickly, but the implementation and APIs are subject to change.  Nevertheless, it is quite capable of creating a full featured ARKit app, and hundreds of ARKit apps on the AppStore already use this plugin.
 
-Please read [LICENSE](./LICENSE) for licensing information.
+Please read [LICENSE](./LICENSE.md) for licensing information.
 
 The code drop is a Unity project, compatible with Unity 2017.4 and later. It contains the plugin sources, example scenes, and components that you may use in your own projects.  See [TUTORIAL.txt](./TUTORIAL.txt) for detailed setup instructions.
 
@@ -25,18 +25,18 @@ Please feel free to extend the plugin and send pull requests. You may also provi
 ## Building ##
 
 Give it a go yourself. Open up
-[UnityARKitScene.unity](./Assets/UnityARKitPlugin/Examples/UnityARKitScene/UnityARKitScene.unity)
+[UnityARKitScene.unity](./Examples/UnityARKitScene/UnityARKitScene.unity)
 — a scene that demostrates ARKit’s basic functionality —
 and try building it to iOS.
 Note that
-[UnityARBuildPostprocessor.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Editor/UnityARBuildPostprocessor.cs)
-is an editor script that executes at build time, and does some modifications to the XCode project that is exported by Unity.  You could also try building the other example scenes in the subfolders of the [Examples](./Assets/UnityARKitPlugin/Examples/) folder.
+[UnityARBuildPostprocessor.cs](./Plugins/iOS/UnityARKit/Editor/UnityARBuildPostprocessor.cs)
+is an editor script that executes at build time, and does some modifications to the XCode project that is exported by Unity.  You could also try building the other example scenes in the subfolders of the [Examples](./Examples/) folder.
 
 
 ## API overview ##
 
 
-[UnityARSessionNativeInterface.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/NativeInterface/UnityARSessionNativeInterface.cs)
+[UnityARSessionNativeInterface.cs](./Plugins/iOS/UnityARKit/NativeInterface/UnityARSessionNativeInterface.cs)
 implements the following:
 
 ```CSharp
@@ -106,30 +106,30 @@ public static event ARSessionCallback ARSessioninterruptionEndedEvent;
 public static event ARSessionTrackingChanged ARSessionTrackingChangedEvent;
 ```
 
-[ARSessionNative.mm](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/NativeInterface/ARSessionNative.mm) contains Objective-C code for directly interfacing with the ARKit SDK.
+[ARSessionNative.mm](./Plugins/iOS/UnityARKit/NativeInterface/ARSessionNative.mm) contains Objective-C code for directly interfacing with the ARKit SDK.
 
-All C# files in the [NativeInterface](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/NativeInterface/) folder beginning with “AR” are the scripting API equivalents of data structures exposed by ARKit.
+All C# files in the [NativeInterface](./Plugins/iOS/UnityARKit/NativeInterface/) folder beginning with “AR” are the scripting API equivalents of data structures exposed by ARKit.
 
 
 ## ARKit useful components ##
 
 **Physical camera feed**. Place this component on the physcial camera object. It will grab the textures needed for rendering the video, set it on the material needed for blitting to the backbuffer, and set up the command buffer to do the actual blit.
-[UnityARVideo.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Helpers/UnityARVideo.cs)
+[UnityARVideo.cs](./Plugins/iOS/UnityARKit/Helpers/UnityARVideo.cs)
 
 **Virtual camera manager**. Place this component on a GameObject in the scene that references the virtual camera that you intend to control via ARKit.
 It will position and rotate the camera as well as provide the correct projection matrix to it based on updates from ARKit.
 This component also has the code to initialize an ARKit session.
-[UnityARCameraManager.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Helpers/UnityARCameraManager.cs)
+[UnityARCameraManager.cs](./Plugins/iOS/UnityARKit/Helpers/UnityARCameraManager.cs)
 
-**Plane anchor GameObjects**. For each plane anchor detected, this component generates a GameObject which is instantiated from a referenced prefab and positioned, scaled and rotated according to plane detected. As the plane anchor updates and is removed, so is the corresponding GameObject. [UnityARGeneratePlane.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Helpers/UnityARGeneratePlane.cs)
+**Plane anchor GameObjects**. For each plane anchor detected, this component generates a GameObject which is instantiated from a referenced prefab and positioned, scaled and rotated according to plane detected. As the plane anchor updates and is removed, so is the corresponding GameObject. [UnityARGeneratePlane.cs](./Plugins/iOS/UnityARKit/Helpers/UnityARGeneratePlane.cs)
 
-**Point cloud visualizer**. This component references a particle system prefab, maximum number of particles and size per particle to be able to visualize the point cloud as particles in space. [PointCloudParticleExample.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Helpers/PointCloudParticleExample.cs)
+**Point cloud visualizer**. This component references a particle system prefab, maximum number of particles and size per particle to be able to visualize the point cloud as particles in space. [PointCloudParticleExample.cs](./Plugins/iOS/UnityARKit/Helpers/PointCloudParticleExample.cs)
 
-**Hit test**. This component references the root transform of a GameObject in the scene, and does an ARKit Hit Test against the scene wherever user touches on screen, and when hit successful (against HitTest result types enumerated in the script), moves the referenced GameObject to that hit point. [UnityARHitTestExample.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Helpers/UnityARHitTestExample.cs)
+**Hit test**. This component references the root transform of a GameObject in the scene, and does an ARKit Hit Test against the scene wherever user touches on screen, and when hit successful (against HitTest result types enumerated in the script), moves the referenced GameObject to that hit point. [UnityARHitTestExample.cs](./Plugins/iOS/UnityARKit/Helpers/UnityARHitTestExample.cs)
 
-**Light estimation**. This component when added to a light in the scene will scale the intensity of that light to the estimated lighting in the real scene being viewed. [UnityARAmbient.cs](./Assets/UnityARKitPlugin/Plugins/iOS/UnityARKit/Helpers/UnityARAmbient.cs)
+**Light estimation**. This component when added to a light in the scene will scale the intensity of that light to the estimated lighting in the real scene being viewed. [UnityARAmbient.cs](./Plugins/iOS/UnityARKit/Helpers/UnityARAmbient.cs)
 
-You can read how some of these components are used in the [Examples](./Assets/UnityARKitPlugin/Examples/) scenes by checking out [SCENES.txt](./SCENES.txt).
+You can read how some of these components are used in the [Examples](./Examples/) scenes by checking out [SCENES.txt](./SCENES.txt).
 
 
 ## Feature documentation ##
@@ -170,10 +170,10 @@ This plugin will not be updated to support ARKit 3 features. Please use [AR Foun
 
 ## Questions?  Bugs? Showcase? ##
 
-Contact us via the [forums](https://forum.unity.com/forums/arkit.139/) for questions.
+~~Contact us via the [forums](https://forum.unity.com/forums/arkit.139/) for questions.~~ Unity no longer support this plugin.
 
-You may submit [issues](https://bitbucket.org/Unity-Technologies/unity-arkit-plugin/issues?status=new&status=open) if you feel there are bugs that are not solved by asking on the forums.
+You may submit [issues](https://github.com/metiscoda/UnityARKitPlugin/issues) if you feel there are bugs that are not solved by asking on the forums.
 
-You may submit a [pull request](https://bitbucket.org/Unity-Technologies/unity-arkit-plugin/pull-requests/) if you believe you have a useful enhancement for this plugin.
+You may submit a [pull request](https://github.com/metiscoda/UnityARKitPlugin/pulls) if you believe you have a useful enhancement for this plugin.
 
 Follow [@jimmyjamjam](https://twitter.com/jimmy_jam_jam) for various AR related tweets, and showcase your creation there as well.
